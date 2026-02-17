@@ -1,0 +1,19 @@
+{
+    "name": "teleprompter",
+    "version": "1.0.0",
+    "description": "Desktop teleprompter with click-through functionality",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron . --dev"
+    },
+    "keywords": [
+        "electron",
+        "teleprompter"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "electron": "^28.0.0"
+    }
+}

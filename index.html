@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teleprompter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="app">
+    <!-- Scrolling text container -->
+    <div id="scroll-container" class="scroll-container">
+      <div id="text-display" class="text-display">
+        <textarea id="text-editor" class="text-editor hidden" placeholder="Enter your script here...">Welcome to your Teleprompter!
+
+This is sample text to get you started. Replace this with your script.
+
+The teleprompter will automatically scroll when you press Play or use the global shortcut Ctrl+Shift+Space.
+
+You can adjust the scrolling speed using the slider below.
+
+Press Ctrl+Shift+L to toggle Interaction Mode:
+- When OFF (default): You can click through this window to interact with apps behind it
+- When ON: You can interact with this window to edit text and adjust settings
+
+Try it out and enjoy your presentations!</textarea>
+        <div id="text-content" class="text-content"></div>
+      </div>
+    </div>
+
+    <!-- Controls panel (visible only in interaction mode) -->
+    <div id="controls" class="controls hidden">
+      <div class="controls-inner">
+        <div class="control-row">
+          <button id="play-pause-btn" class="btn-primary">▶ Play</button>
+
+          <div class="speed-control">
+            <label for="speed-slider">Speed: <span id="speed-value">1.0</span>x</label>
+            <input type="range" id="speed-slider" min="0.5" max="3" step="0.1" value="1">
+          </div>
+        </div>
+
+        <div class="shortcuts-info">
+          <p><kbd>Ctrl+Shift+Space</kbd> Play/Pause</p>
+          <p><kbd>Ctrl+Shift+L</kbd> Toggle Interaction Mode</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interaction mode indicator -->
+    <div id="mode-indicator" class="mode-indicator">
+      👻 Click-Through
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+
+</html>
