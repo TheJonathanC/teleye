@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teleprompter Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <div class="app-icon">📺</div>
+            <h1>Teleprompter</h1>
+            <p class="subtitle">Prepare your script and start presenting</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <label for="script-input" class="label">Your Script</label>
+                <textarea id="script-input" class="script-textarea"
+                    placeholder="Enter your presentation script here...">Welcome to your Teleprompter!
+
+This is sample text to get you started. Replace this with your script.
+
+The teleprompter will automatically scroll when you press Play or use the global shortcut Ctrl+Shift+Space.
+
+You can adjust the scrolling speed using the slider.
+
+Press Ctrl+Shift+Esc to exit teleprompter mode and return to this dashboard.
+
+Try it out and enjoy your presentations!</textarea>
+            </div>
+
+            <div class="settings-row">
+                <div class="setting-item">
+                    <label for="speed-input" class="label">Scroll Speed</label>
+                    <div class="speed-selector">
+                        <input type="range" id="speed-input" min="0.5" max="3" step="0.1" value="1" class="slider">
+                        <span id="speed-display" class="speed-value">1.0x</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="start-btn" class="start-button">
+                <span class="button-icon">▶</span>
+                Start Teleprompter
+            </button>
+
+            <div class="shortcuts-card">
+                <h3 class="shortcuts-title">Keyboard Shortcuts</h3>
+                <div class="shortcut-list">
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd>
+                        <span>Play / Pause</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd>
+                        <span>Toggle Interaction Mode</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Esc</kbd>
+                        <span>Exit Teleprompter</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

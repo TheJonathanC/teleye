@@ -17,16 +17,16 @@ const modeIndicator = document.getElementById('mode-indicator');
 
 // Initialize
 function init() {
-    // Set initial text content
-    updateTextDisplay();
-
-    // Event listeners
-    playPauseBtn.addEventListener('click', togglePlayPause);
-    speedSlider.addEventListener('input', handleSpeedChange);
-    textEditor.addEventListener('input', updateTextDisplay);
-
-    // Listen for Electron IPC events
+    // Listen for initial data from dashboard
     if (window.electronAPI) {
+        window.electronAPI.onInitTeleprompter((data) => {
+            textEditor.value = data.script;
+            speed = data.speed;
+            speedSlider.value = speed;
+            speedValue.textContent = speed.toFixed(1);
+            updateTextDisplay();
+        });
+
         window.electronAPI.onInteractionModeChanged((mode) => {
             setInteractionMode(mode);
         });
@@ -35,6 +35,14 @@ function init() {
             togglePlayPause();
         });
     }
+
+    // Event listeners
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    speedSlider.addEventListener('input', handleSpeedChange);
+    textEditor.addEventListener('input', updateTextDisplay);
+
+    // Initial display update
+    updateTextDisplay();
 }
 
 // Update text display

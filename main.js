@@ -1,20 +1,48 @@
 const { app, BrowserWindow, globalShortcut, screen, ipcMain } = require('electron');
 const path = require('path');
 
-let mainWindow = null;
+let dashboardWindow = null;
+let teleprompterWindow = null;
 let interactionMode = false;
+let teleprompterData = {
+    script: '',
+    speed: 1.0
+};
 
-function createWindow() {
-    // Get primary display dimensions
+function createDashboard() {
+    dashboardWindow = new BrowserWindow({
+        width: 800,
+        height: 700,
+        center: true,
+        resizable: false,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: false,
+            contextIsolation: true,
+        },
+        titleBarStyle: 'hiddenInset', // macOS style
+        backgroundColor: '#f5f7fa',
+    });
+
+    dashboardWindow.loadFile('dashboard.html');
+
+    dashboardWindow.on('closed', () => {
+        dashboardWindow = null;
+        if (teleprompterWindow) {
+            teleprompterWindow.close();
+        }
+    });
+}
+
+function createTeleprompter() {
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width: screenWidth } = primaryDisplay.workAreaSize;
 
-    // Create frameless, transparent, always-on-top window
-    mainWindow = new BrowserWindow({
+    teleprompterWindow = new BrowserWindow({
         width: 800,
         height: 150,
-        x: Math.floor((screenWidth - 800) / 2), // Center horizontally
-        y: 0, // Top of screen
+        x: Math.floor((screenWidth - 800) / 2),
+        y: 0,
         frame: false,
         transparent: true,
         alwaysOnTop: true,
@@ -26,41 +54,60 @@ function createWindow() {
         },
     });
 
-    // Start with click-through enabled (interaction mode OFF)
-    mainWindow.setIgnoreMouseEvents(true, { forward: true });
+    teleprompterWindow.setIgnoreMouseEvents(true, { forward: true });
+    teleprompterWindow.loadFile('index.html');
 
-    // Load the HTML file
-    mainWindow.loadFile('index.html');
+    // Send script data once loaded
+    teleprompterWindow.webContents.on('did-finish-load', () => {
+        teleprompterWindow.webContents.send('init-teleprompter', teleprompterData);
+    });
 
-    // Open DevTools in development mode
-    if (process.argv.includes('--dev')) {
-        mainWindow.webContents.openDevTools();
+    teleprompterWindow.on('closed', () => {
+        teleprompterWindow = null;
+        interactionMode = false;
+        globalShortcut.unregisterAll();
+        if (dashboardWindow) {
+            dashboardWindow.show();
+        }
+    });
+
+    // Hide dashboard
+    if (dashboardWindow) {
+        dashboardWindow.hide();
     }
 
-    // Register global shortcuts
+    // Register shortcuts
+    registerTeleprompterShortcuts();
+}
+
+function registerTeleprompterShortcuts() {
     globalShortcut.register('CommandOrControl+Shift+L', () => {
-        if (mainWindow) {
+        if (teleprompterWindow) {
             interactionMode = !interactionMode;
-            mainWindow.setIgnoreMouseEvents(!interactionMode, { forward: true });
-            mainWindow.webContents.send('interaction-mode-changed', interactionMode);
-            console.log(`Interaction mode: ${interactionMode ? 'ON' : 'OFF'}`);
+            teleprompterWindow.setIgnoreMouseEvents(!interactionMode, { forward: true });
+            teleprompterWindow.webContents.send('interaction-mode-changed', interactionMode);
         }
     });
 
     globalShortcut.register('CommandOrControl+Shift+Space', () => {
-        if (mainWindow) {
-            mainWindow.webContents.send('toggle-play-pause');
-            console.log('Play/Pause toggled');
+        if (teleprompterWindow) {
+            teleprompterWindow.webContents.send('toggle-play-pause');
+        }
+    });
+
+    globalShortcut.register('CommandOrControl+Shift+Escape', () => {
+        if (teleprompterWindow) {
+            teleprompterWindow.close();
         }
     });
 }
 
 app.whenReady().then(() => {
-    createWindow();
+    createDashboard();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow();
+            createDashboard();
         }
     });
 });
@@ -70,11 +117,15 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => {
-    // Unregister all shortcuts
     globalShortcut.unregisterAll();
 });
 
 // IPC handlers
+ipcMain.on('start-teleprompter', (event, data) => {
+    teleprompterData = data;
+    createTeleprompter();
+});
+
 ipcMain.on('get-interaction-mode', (event) => {
     event.reply('interaction-mode-changed', interactionMode);
 });
