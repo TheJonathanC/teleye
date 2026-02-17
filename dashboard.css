@@ -5,221 +5,387 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #f5f5f7;
+    background-image:
+        radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+    background-size: 100% 100%;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    color: #1d1d1f;
+    -webkit-font-smoothing: antialiased;
 }
 
+/* Glassmorphism Container */
 .dashboard {
     width: 100%;
-    max-width: 700px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    /* Advanced Glassmorphism */
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 0.1) 100%);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+
+    /* Liquid/Bevel Effect */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-left: 1px solid rgba(255, 255, 255, 0.8);
+
+    /* Inner light/shadow for volume */
+    box-shadow:
+        /* Outer shadow */
+        0 8px 32px 0 rgba(31, 38, 135, 0.15),
+        /* Inner highlight (top/left) */
+        inset 1px 1px 0 0 rgba(255, 255, 255, 0.5),
+        /* Inner shadow (bottom/right) - subtle bevel */
+        inset -1px -1px 0 0 rgba(0, 0, 0, 0.05);
+
+    border-radius: 16px;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
 }
 
+/* Optional: Add a subtle 'noise' or gradient overlay for texture */
+.dashboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Custom Title Bar */
+.window-controls {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 1000;
+    -webkit-app-region: no-drag;
+}
+
+.control-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.5);
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+    transition: opacity 0.2s;
+    opacity: 0.8;
+}
+
+.window-controls:hover .control-btn {
+    opacity: 1;
+}
+
+.close-btn {
+    background: #FF5F56;
+}
+
+.min-btn {
+    background: #FFBD2E;
+}
+
+.max-btn {
+    background: #27C93F;
+}
+
+/* Control Hover Icons */
+.control-btn::before {
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.window-controls:hover .close-btn::before {
+    content: '✕';
+}
+
+.window-controls:hover .min-btn::before {
+    content: '−';
+}
+
+.window-controls:hover .max-btn::before {
+    content: '+';
+}
+
+.window-controls:hover .control-btn::before {
+    opacity: 1;
+}
+
+
+/* Header */
 .header {
-    text-align: center;
-    padding: 3rem 2rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    padding: 2.5rem 3rem 1.5rem;
+    /* More top padding for controls */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    -webkit-app-region: drag;
+    /* Allow window dragging */
 }
 
 .app-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* Standard property */
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 0.5rem;
+.header-text h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
 .subtitle {
-    font-size: 1rem;
-    opacity: 0.9;
+    font-size: 15px;
+    color: #86868b;
     font-weight: 400;
 }
 
+/* Content Area */
 .content {
-    padding: 2rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* layout split */
+    gap: 2rem;
+    padding: 2rem 3rem;
+    overflow-y: auto;
 }
 
-.card {
-    margin-bottom: 1.5rem;
+/* Script Section */
+.script-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
 .label {
-    display: block;
-    font-size: 0.875rem;
+    font-size: 13px;
     font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6e6e73;
+    margin-left: 4px;
 }
 
 .script-textarea {
+    flex-grow: 1;
     width: 100%;
-    min-height: 200px;
-    padding: 1rem;
-    border: 2px solid #e5e7eb;
+    min-height: 400px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.5);
     font-family: inherit;
-    resize: vertical;
+    font-size: 17px;
+    line-height: 1.5;
+    color: #1d1d1f;
+    resize: none;
     transition: all 0.2s ease;
-    background: white;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.02);
+    user-select: text;
+    /* Allow text selection specifically here */
+    -webkit-app-region: no-drag;
+}
+
+/* Ensure inputs are interactive */
+input,
+button,
+textarea {
+    -webkit-app-region: no-drag;
 }
 
 .script-textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #007AFF;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
-.settings-row {
+/* Settings Sidebar */
+.settings-sidebar {
     display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Card Style for Sidebar Items */
+.settings-card {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+
+    /* Bevel/Refraction effect for sub-elements */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+    border-left: 1px solid rgba(255, 255, 255, 0.6);
+
+    box-shadow:
+        0 4px 24px -1px rgba(0, 0, 0, 0.05),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.speed-control {
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
-    margin-bottom: 1.5rem;
 }
 
-.setting-item {
-    flex: 1;
-}
-
-.speed-selector {
+/* Apple-style Slider */
+.slider-container {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f9fafb;
-    border-radius: 12px;
+    gap: 12px;
 }
 
 .slider {
-    flex: 1;
-    height: 6px;
     -webkit-appearance: none;
     appearance: none;
-    background: #e5e7eb;
-    border-radius: 3px;
+    /* Standard property */
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
     outline: none;
 }
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
     width: 20px;
     height: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fff;
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
-    transition: transform 0.2s ease;
+    transition: transform 0.1s;
+    margin-top: -8px;
+    /* centering */
+    top: 50%;
 }
 
-.slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+.slider::-webkit-slider-runnable-track {
+    height: 4px;
+    background: transparent;
+    /* handled by slider bg */
 }
 
-.slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+.slider::-webkit-slider-thumb:active {
+    transform: scale(0.95);
+    background: #e5e5e5;
 }
 
 .speed-value {
-    font-weight: 600;
-    color: #667eea;
-    min-width: 50px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    font-size: 15px;
+    color: #1d1d1f;
+    min-width: 32px;
     text-align: right;
 }
 
+/* Start Button */
 .start-button {
     width: 100%;
-    padding: 1.25rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 14px;
+    background: #007AFF;
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 1.125rem;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
 .start-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+    background: #006ce6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
 }
 
 .start-button:active {
+    background: #005bb5;
     transform: translateY(0);
 }
 
-.button-icon {
-    font-size: 1.25rem;
-}
-
-.shortcuts-card {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f9fafb;
-    border-radius: 12px;
-}
-
-.shortcuts-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 1rem;
-}
-
-.shortcut-list {
+/* Shortcuts List */
+.shortcuts-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 12px;
 }
 
 .shortcut-item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
+    font-size: 13px;
+    color: #1d1d1f;
 }
 
-.shortcut-item span {
-    margin-left: auto;
-    color: #374151;
+.keys {
+    display: flex;
+    gap: 4px;
 }
 
 kbd {
-    padding: 0.25rem 0.5rem;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #374151;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border: 1px solid #d1d1d6;
+    border-bottom-color: #c7c7cc;
+    border-radius: 5px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 6px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Scrollbar for dashboard content if needed */
+.content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
 }

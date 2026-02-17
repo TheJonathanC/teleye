@@ -3,7 +3,7 @@ let isPlaying = false;
 let speed = 1.0;
 let interactionMode = false;
 let animationFrameId = null;
-let lastTime = 0;
+let lastTimestamp = 0; // Using performance.now() consistent timing
 
 // DOM elements
 const scrollContainer = document.getElementById('scroll-container');
@@ -15,16 +15,21 @@ const speedSlider = document.getElementById('speed-slider');
 const speedValue = document.getElementById('speed-value');
 const modeIndicator = document.getElementById('mode-indicator');
 
-// Initialize
 function init() {
     // Listen for initial data from dashboard
     if (window.electronAPI) {
         window.electronAPI.onInitTeleprompter((data) => {
-            textEditor.value = data.script;
-            speed = data.speed;
-            speedSlider.value = speed;
-            speedValue.textContent = speed.toFixed(1);
-            updateTextDisplay();
+            // CRITICAL: Ensure we get data and update DOM immediately
+            if (data && data.script) {
+                textEditor.value = data.script;
+                // Force update display
+                textContent.textContent = data.script;
+            }
+            if (data && data.speed) {
+                speed = data.speed;
+                speedSlider.value = speed;
+                speedValue.textContent = speed.toFixed(1);
+            }
         });
 
         window.electronAPI.onInteractionModeChanged((mode) => {
@@ -40,29 +45,21 @@ function init() {
     playPauseBtn.addEventListener('click', togglePlayPause);
     speedSlider.addEventListener('input', handleSpeedChange);
     textEditor.addEventListener('input', updateTextDisplay);
-
-    // Initial display update
-    updateTextDisplay();
 }
 
-// Update text display
 function updateTextDisplay() {
     textContent.textContent = textEditor.value;
 }
 
-// Set interaction mode
 function setInteractionMode(mode) {
     interactionMode = mode;
-
     if (mode) {
-        // Interactive mode
         controls.classList.remove('hidden');
         textEditor.classList.remove('hidden');
         textContent.classList.add('hidden');
         modeIndicator.textContent = '🖱 Interactive';
         modeIndicator.classList.add('interactive');
     } else {
-        // Click-through mode
         controls.classList.add('hidden');
         textEditor.classList.add('hidden');
         textContent.classList.remove('hidden');
@@ -71,61 +68,59 @@ function setInteractionMode(mode) {
     }
 }
 
-// Toggle play/pause
 function togglePlayPause() {
     isPlaying = !isPlaying;
     playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
 
     if (isPlaying) {
+        // Reset timestamp reference when starting to prevent jump
+        lastTimestamp = performance.now();
         startScrolling();
     } else {
         stopScrolling();
     }
 }
 
-// Handle speed change
 function handleSpeedChange(e) {
     speed = parseFloat(e.target.value);
     speedValue.textContent = speed.toFixed(1);
 }
 
-// Auto-scroll logic
 function startScrolling() {
-    lastTime = null; // Reset lastTime when starting
-
     function scroll(timestamp) {
         if (!isPlaying) return;
 
-        // Initialize lastTime on first frame
-        if (lastTime === null) {
-            lastTime = timestamp;
-        }
+        // Calculate delta time
+        // Use the passed timestamp from RAF for consistency
+        const deltaTime = timestamp - lastTimestamp;
 
-        const deltaTime = timestamp - lastTime;
-        const pixelsPerSecond = 50 * speed;
-        const scrollAmount = (pixelsPerSecond * deltaTime) / 1000;
+        // Only scroll if some time has passed (not 0) and not a huge jump (e.g. background tab resume)
+        // 100ms cap to prevent jump after lag
+        if (deltaTime > 0 && deltaTime < 100) {
+            // Speed logic: 50 base pixels per second * speed multiplier
+            const pixelsPerSecond = 50 * speed;
+            const scrollAmount = (pixelsPerSecond * deltaTime) / 1000;
 
-        scrollContainer.scrollTop += scrollAmount;
+            scrollContainer.scrollTop += scrollAmount;
 
-        // Check if we've reached the bottom
-        const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-        if (scrollTop + clientHeight >= scrollHeight - 10) {
-            // Pause at bottom
-            isPlaying = false;
-            playPauseBtn.textContent = '▶ Play';
-
-            // Reset to top after a brief pause
-            setTimeout(() => {
+            // Check if bottom reached using a small threshold (1px)
+            // scrollTop allows fractional values in most modern browsers, 
+            // but reading it back might round in some cases. clientHeight + scrollTop ~= scrollHeight
+            if (Math.ceil(scrollContainer.scrollTop + scrollContainer.clientHeight) >= scrollContainer.scrollHeight) {
+                // Determine loop or stop behavior. For now, stop.
+                isPlaying = false;
+                playPauseBtn.textContent = '▶ Play';
+                // Reset to top
                 scrollContainer.scrollTop = 0;
-            }, 1000);
-
-            return;
+                return;
+            }
         }
 
-        lastTime = timestamp;
+        lastTimestamp = timestamp;
         animationFrameId = requestAnimationFrame(scroll);
     }
 
+    // Start loop
     animationFrameId = requestAnimationFrame(scroll);
 }
 
@@ -136,5 +131,4 @@ function stopScrolling() {
     }
 }
 
-// Initialize on load
 init();

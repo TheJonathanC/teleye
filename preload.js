@@ -1,6 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
+    // Window Controls
+    closeDashboard() { ipcRenderer.send('close-dashboard'); },
+    minimizeDashboard() { ipcRenderer.send('minimize-dashboard'); },
+
     // Dashboard
     startTeleprompter(data) {
         ipcRenderer.send('start-teleprompter', data);

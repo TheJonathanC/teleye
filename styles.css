@@ -24,13 +24,30 @@ body {
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
+
+    /* Dark Liquid Glass */
+    background: linear-gradient(135deg,
+            rgba(20, 20, 25, 0.7) 0%,
+            rgba(20, 20, 25, 0.4) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+
     padding: 2rem 3rem;
     scrollbar-width: none;
-    /* Firefox */
     -ms-overflow-style: none;
-    /* IE/Edge */
+
+    /* Rounded corners & Bevel */
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
+    /* Connects to invisible window top */
+
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 .scroll-container::-webkit-scrollbar {
