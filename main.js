@@ -1,5 +1,6 @@
-const { app, BrowserWindow, globalShortcut, screen, ipcMain } = require('electron');
+const { app, BrowserWindow, globalShortcut, screen, ipcMain, dialog } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
 let dashboardWindow = null;
 let teleprompterWindow = null;
@@ -9,16 +10,63 @@ let teleprompterData = {
     speed: 1.0
 };
 
+// ─── Auto Updater ─────────────────────────────────────────────
+function setupAutoUpdater() {
+    // Don't check for updates in dev mode
+    if (!app.isPackaged) return;
+
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+
+    autoUpdater.on('update-available', (info) => {
+        dialog.showMessageBox(dashboardWindow, {
+            type: 'info',
+            title: 'Update Available',
+            message: `Teleye ${info.version} is available.`,
+            detail: 'Downloading update in the background...',
+            buttons: ['OK'],
+            icon: path.join(__dirname, 'teleye.png')
+        });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+        dialog.showMessageBox(dashboardWindow, {
+            type: 'info',
+            title: 'Update Ready',
+            message: 'Update downloaded.',
+            detail: 'Restart Teleye now to install the latest version.',
+            buttons: ['Restart Now', 'Later'],
+            defaultId: 0,
+            icon: path.join(__dirname, 'teleye.png')
+        }).then(({ response }) => {
+            if (response === 0) {
+                autoUpdater.quitAndInstall();
+            }
+        });
+    });
+
+    autoUpdater.on('error', (err) => {
+        console.error('Auto-updater error:', err);
+    });
+
+    // Check for updates 3 seconds after launch
+    setTimeout(() => {
+        autoUpdater.checkForUpdatesAndNotify();
+    }, 3000);
+}
+
+// ─── Dashboard Window ─────────────────────────────────────────
 function createDashboard() {
     dashboardWindow = new BrowserWindow({
         width: 1000,
-        height: 800,
-        show: false, // Wait for content
+        height: 700,
+        show: false,
         frame: false,
         transparent: true,
-        backgroundColor: '#00000000', // Critical for transparent windows on Windows
+        backgroundColor: '#00000000',
         resizable: true,
         hasShadow: true,
+        icon: path.join(__dirname, 'teleye.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
@@ -28,13 +76,13 @@ function createDashboard() {
 
     dashboardWindow.loadFile('dashboard.html');
 
-    // Show when ready to prevent flickering
     dashboardWindow.once('ready-to-show', () => {
         dashboardWindow.show();
         dashboardWindow.focus();
+        setupAutoUpdater();
     });
 
-    // Fallback: if ready-to-show doesn't fire for some reason
+    // Fallback show
     setTimeout(() => {
         if (dashboardWindow && !dashboardWindow.isVisible()) {
             dashboardWindow.show();
@@ -49,6 +97,7 @@ function createDashboard() {
     });
 }
 
+// ─── Teleprompter Window ──────────────────────────────────────
 function createTeleprompter() {
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width: screenWidth } = primaryDisplay.workAreaSize;
@@ -60,10 +109,11 @@ function createTeleprompter() {
         y: 0,
         frame: false,
         transparent: true,
-        backgroundColor: '#00000000', // Critical for transparent windows on Windows
+        backgroundColor: '#00000000',
         alwaysOnTop: true,
         resizable: true,
         hasShadow: false,
+        icon: path.join(__dirname, 'teleye.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
@@ -74,7 +124,6 @@ function createTeleprompter() {
     teleprompterWindow.setIgnoreMouseEvents(true, { forward: true });
     teleprompterWindow.loadFile('index.html');
 
-    // Send script data once loaded
     teleprompterWindow.webContents.on('did-finish-load', () => {
         teleprompterWindow.webContents.send('init-teleprompter', teleprompterData);
     });
@@ -88,31 +137,27 @@ function createTeleprompter() {
         }
     });
 
-    // Hide dashboard
     if (dashboardWindow) {
         dashboardWindow.hide();
     }
 
-    // Register shortcuts
     registerTeleprompterShortcuts();
 }
 
+// ─── Shortcuts ────────────────────────────────────────────────
 function registerTeleprompterShortcuts() {
-    // Start/Stop: Ctrl + Space
     globalShortcut.register('CommandOrControl+Space', () => {
         if (teleprompterWindow) {
             teleprompterWindow.webContents.send('toggle-play-pause');
         }
     });
 
-    // Exit: Ctrl + Alt + X
     globalShortcut.register('CommandOrControl+Alt+X', () => {
         if (teleprompterWindow) {
             teleprompterWindow.close();
         }
     });
 
-    // Interaction: Ctrl + Shift + L
     globalShortcut.register('CommandOrControl+Shift+L', () => {
         if (teleprompterWindow) {
             interactionMode = !interactionMode;
@@ -122,10 +167,8 @@ function registerTeleprompterShortcuts() {
     });
 }
 
+// ─── App Lifecycle ────────────────────────────────────────────
 app.whenReady().then(() => {
-    // Disable hardware acceleration if causing issues (optional, but good for transparency)
-    // app.disableHardwareAcceleration(); 
-
     createDashboard();
 
     app.on('activate', () => {
@@ -143,7 +186,7 @@ app.on('will-quit', () => {
     globalShortcut.unregisterAll();
 });
 
-// IPC handlers - Ensure robust communication
+// ─── IPC Handlers ────────────────────────────────────────────
 ipcMain.on('close-dashboard', () => {
     if (dashboardWindow) dashboardWindow.close();
 });

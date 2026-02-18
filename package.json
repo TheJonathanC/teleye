@@ -1,19 +1,65 @@
 {
-    "name": "teleprompter",
+    "name": "teleye",
     "version": "1.0.0",
-    "description": "Desktop teleprompter with click-through functionality",
+    "description": "Studio-quality teleprompter for desktop",
     "main": "main.js",
     "scripts": {
         "start": "electron .",
-        "dev": "electron . --dev"
+        "dev": "electron . --dev",
+        "dist": "electron-builder",
+        "dist:win": "electron-builder --win",
+        "publish": "electron-builder --win --publish always"
     },
     "keywords": [
         "electron",
         "teleprompter"
     ],
-    "author": "",
+    "author": "TheJonathanC",
     "license": "MIT",
     "devDependencies": {
-        "electron": "^28.0.0"
+        "electron": "^28.0.0",
+        "electron-builder": "^26.8.1"
+    },
+    "build": {
+        "appId": "com.thejonathanc.teleye",
+        "productName": "Teleye",
+        "copyright": "Copyright © 2024 TheJonathanC",
+        "icon": "teleye.ico",
+        "files": [
+            "**/*",
+            "!node_modules/.cache",
+            "!**/*.map",
+            "!dist/**",
+            "!release/**",
+            "!.env",
+            "!.gitignore",
+            "!README.md"
+        ],
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "icon": "teleye.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "Teleye"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "TheJonathanC",
+            "repo": "teleye"
+        }
+    },
+    "dependencies": {
+        "electron-updater": "^6.8.3"
     }
 }

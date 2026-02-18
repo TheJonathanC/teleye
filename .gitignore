@@ -10,6 +10,7 @@ yarn-error.log*
 # build
 dist
 out
+release
 
 # OS
 .DS_Store
