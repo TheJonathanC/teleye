@@ -16,6 +16,7 @@ function createDashboard() {
         show: false, // Wait for content
         frame: false,
         transparent: true,
+        backgroundColor: '#00000000', // Critical for transparent windows on Windows
         resizable: true,
         hasShadow: true,
         webPreferences: {
@@ -59,6 +60,7 @@ function createTeleprompter() {
         y: 0,
         frame: false,
         transparent: true,
+        backgroundColor: '#00000000', // Critical for transparent windows on Windows
         alwaysOnTop: true,
         resizable: true,
         hasShadow: false,

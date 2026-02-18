@@ -1,391 +1,361 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: #f5f5f7;
-    background-image:
-        radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
-        radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
-        radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
-    background-size: 100% 100%;
-    min-height: 100vh;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: transparent;
+    height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #1d1d1f;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism Container */
+/* ─── Root Container ─────────────────────────────────────────── */
 .dashboard {
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    background: #0c0c10;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-    /* Advanced Glassmorphism */
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.4) 0%,
-            rgba(255, 255, 255, 0.1) 100%);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+/* Ambient glow top-right */
+.dashboard::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
 
-    /* Liquid/Bevel Effect */
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-top: 1px solid rgba(255, 255, 255, 0.8);
-    border-left: 1px solid rgba(255, 255, 255, 0.8);
+/* ─── Title Bar ──────────────────────────────────────────────── */
+.title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 48px;
+    flex-shrink: 0;
+    -webkit-app-region: drag;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    position: relative;
+    z-index: 10;
+}
 
-    /* Inner light/shadow for volume */
-    box-shadow:
-        /* Outer shadow */
-        0 8px 32px 0 rgba(31, 38, 135, 0.15),
-        /* Inner highlight (top/left) */
-        inset 1px 1px 0 0 rgba(255, 255, 255, 0.5),
-        /* Inner shadow (bottom/right) - subtle bevel */
-        inset -1px -1px 0 0 rgba(0, 0, 0, 0.05);
+.title-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
 
-    border-radius: 16px;
+.app-logo {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+}
+
+.app-logo svg {
+    width: 13px;
+    height: 13px;
+}
+
+.title-bar-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.02em;
+}
+
+/* ─── Window Controls ────────────────────────────────────────── */
+.window-controls {
+    display: flex;
+    gap: 6px;
+    -webkit-app-region: no-drag;
+}
+
+.control-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.25);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.control-btn svg {
+    width: 13px;
+    height: 13px;
+    stroke-width: 2px;
+    pointer-events: none;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.65);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+.control-btn:active {
+    transform: scale(0.92);
+}
+
+.close-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.15);
+}
+
+/* ─── Content Layout ─────────────────────────────────────────── */
+.content {
+    display: grid;
+    grid-template-columns: 1fr 256px;
+    gap: 0;
+    flex: 1;
     overflow: hidden;
     position: relative;
     z-index: 1;
 }
 
-/* Optional: Add a subtle 'noise' or gradient overlay for texture */
-.dashboard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* Custom Title Bar */
-.window-controls {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    display: flex;
-    gap: 8px;
-    z-index: 1000;
-    -webkit-app-region: no-drag;
-}
-
-.control-btn {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px;
-    font-weight: 700;
-    color: rgba(0, 0, 0, 0.5);
-    border: 0.5px solid rgba(0, 0, 0, 0.1);
-    transition: opacity 0.2s;
-    opacity: 0.8;
-}
-
-.window-controls:hover .control-btn {
-    opacity: 1;
-}
-
-.close-btn {
-    background: #FF5F56;
-}
-
-.min-btn {
-    background: #FFBD2E;
-}
-
-.max-btn {
-    background: #27C93F;
-}
-
-/* Control Hover Icons */
-.control-btn::before {
-    opacity: 0;
-    transition: opacity 0.1s;
-}
-
-.window-controls:hover .close-btn::before {
-    content: '✕';
-}
-
-.window-controls:hover .min-btn::before {
-    content: '−';
-}
-
-.window-controls:hover .max-btn::before {
-    content: '+';
-}
-
-.window-controls:hover .control-btn::before {
-    opacity: 1;
-}
-
-
-/* Header */
-.header {
-    padding: 2.5rem 3rem 1.5rem;
-    /* More top padding for controls */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    background: transparent;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    -webkit-app-region: drag;
-    /* Allow window dragging */
-}
-
-.app-icon {
-    font-size: 3.5rem;
-    background: linear-gradient(135deg, #007AFF, #5856D6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    /* Standard property */
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.header-text h1 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.subtitle {
-    font-size: 15px;
-    color: #86868b;
-    font-weight: 400;
-}
-
-/* Content Area */
-.content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    /* layout split */
-    gap: 2rem;
-    padding: 2rem 3rem;
-    overflow-y: auto;
-}
-
-/* Script Section */
+/* ─── Script Section ─────────────────────────────────────────── */
 .script-section {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    padding: 16px 16px 16px 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+    gap: 10px;
+    min-height: 0;
 }
 
-.label {
-    font-size: 13px;
+.field-label {
+    font-size: 10.5px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6e6e73;
-    margin-left: 4px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.2);
 }
 
 .script-textarea {
-    flex-grow: 1;
+    flex: 1;
     width: 100%;
-    min-height: 400px;
-    padding: 1.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.5);
-    font-family: inherit;
-    font-size: 17px;
-    line-height: 1.5;
-    color: #1d1d1f;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.025);
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
     resize: none;
-    transition: all 0.2s ease;
-    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.02);
-    user-select: text;
-    /* Allow text selection specifically here */
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     -webkit-app-region: no-drag;
+    user-select: text;
+    min-height: 0;
 }
 
-/* Ensure inputs are interactive */
-input,
-button,
-textarea {
-    -webkit-app-region: no-drag;
+.script-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.15);
 }
 
 .script-textarea:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.9);
-    border-color: #007AFF;
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(251, 191, 36, 0.35);
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.07);
 }
 
-/* Settings Sidebar */
+.script-textarea::-webkit-scrollbar {
+    width: 5px;
+}
+
+.script-textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.script-textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 3px;
+}
+
+/* ─── Sidebar ────────────────────────────────────────────────── */
 .settings-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* Card Style for Sidebar Items */
-.settings-card {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    padding: 1.5rem;
-
-    /* Bevel/Refraction effect for sub-elements */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-top: 1px solid rgba(255, 255, 255, 0.6);
-    border-left: 1px solid rgba(255, 255, 255, 0.6);
-
-    box-shadow:
-        0 4px 24px -1px rgba(0, 0, 0, 0.05),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-.speed-control {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-/* Apple-style Slider */
-.slider-container {
-    display: flex;
-    align-items: center;
+    padding: 16px;
     gap: 12px;
+    overflow-y: auto;
+}
+
+.settings-sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ─── Settings Card ──────────────────────────────────────────── */
+.settings-card {
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+}
+
+/* ─── Speed Control ──────────────────────────────────────────── */
+.speed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.speed-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fbbf24;
+    font-variant-numeric: tabular-nums;
+    font-family: 'DM Mono', monospace;
+    background: rgba(251, 191, 36, 0.1);
+    padding: 2px 7px;
+    border-radius: 4px;
 }
 
 .slider {
     -webkit-appearance: none;
     appearance: none;
-    /* Standard property */
     width: 100%;
-    height: 4px;
-    background: rgba(0, 0, 0, 0.1);
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 2px;
     outline: none;
+    cursor: pointer;
 }
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    border: 0.5px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.1);
+    width: 16px;
+    height: 16px;
+    background: #fbbf24;
     border-radius: 50%;
     cursor: pointer;
-    transition: transform 0.1s;
-    margin-top: -8px;
-    /* centering */
-    top: 50%;
+    box-shadow: 0 1px 6px rgba(251, 191, 36, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
 }
 
-.slider::-webkit-slider-runnable-track {
-    height: 4px;
-    background: transparent;
-    /* handled by slider bg */
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 10px rgba(251, 191, 36, 0.5);
 }
 
 .slider::-webkit-slider-thumb:active {
-    transform: scale(0.95);
-    background: #e5e5e5;
+    transform: scale(0.9);
 }
 
-.speed-value {
-    font-variant-numeric: tabular-nums;
-    font-weight: 500;
-    font-size: 15px;
-    color: #1d1d1f;
-    min-width: 32px;
-    text-align: right;
-}
-
-/* Start Button */
-.start-button {
-    width: 100%;
-    padding: 14px;
-    background: #007AFF;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
-}
-
-.start-button:hover {
-    background: #006ce6;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
-}
-
-.start-button:active {
-    background: #005bb5;
-    transform: translateY(0);
-}
-
-/* Shortcuts List */
+/* ─── Shortcuts ──────────────────────────────────────────────── */
 .shortcuts-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .shortcut-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
-    color: #1d1d1f;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.shortcut-item span {
+    font-weight: 500;
 }
 
 .keys {
     display: flex;
-    gap: 4px;
+    gap: 3px;
 }
 
 kbd {
-    background: #fff;
-    border: 1px solid #d1d1d6;
-    border-bottom-color: #c7c7cc;
-    border-radius: 5px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    color: #1d1d1f;
-    font-family: inherit;
-    font-size: 11px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
     font-weight: 500;
-    padding: 3px 6px;
-    min-width: 20px;
+    padding: 2px 5px;
+    min-width: 18px;
     text-align: center;
 }
 
-/* Scrollbar for dashboard content if needed */
-.content::-webkit-scrollbar {
-    width: 8px;
+/* ─── Start Button ───────────────────────────────────────────── */
+.start-button {
+    width: 100%;
+    padding: 12px;
+    background: #f59e0b;
+    color: #0c0c10;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+    letter-spacing: 0.01em;
+    -webkit-app-region: no-drag;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: auto;
+    flex-shrink: 0;
 }
 
-.content::-webkit-scrollbar-track {
-    background: transparent;
+.start-button svg {
+    width: 14px;
+    height: 14px;
+    fill: #0c0c10;
+    flex-shrink: 0;
 }
 
-.content::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    border: 2px solid transparent;
-    background-clip: content-box;
+.start-button:hover {
+    background: #fbbf24;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+}
+
+.start-button:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+/* ─── Ensure inputs are interactive ─────────────────────────── */
+input,
+button,
+textarea {
+    -webkit-app-region: no-drag;
 }

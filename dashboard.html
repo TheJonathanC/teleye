@@ -4,79 +4,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teleprompter</title>
+    <title>Teleye</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="dashboard.css">
 </head>
 
 <body>
     <div class="dashboard">
-        <!-- Window Controls -->
-        <div class="window-controls">
-            <div class="control-btn close-btn" onclick="window.electronAPI.closeDashboard()"></div>
-            <div class="control-btn min-btn" onclick="window.electronAPI.minimizeDashboard()"></div>
-            <!-- Max button is optional/hidden for fixed size if desired -->
-            <div class="control-btn max-btn" style="opacity: 0.3; cursor: default;"></div>
-        </div>
 
-        <div class="header">
-            <div class="app-icon"></div>
-            <div class="header-text">
-                <h1>Teleprompter Pro</h1>
-                <p class="subtitle">Studio-quality prompting</p>
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div class="title-bar-left">
+                <div class="app-logo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6h16M4 10h10M4 14h13M4 18h7" stroke="#0c0c10" stroke-width="2.5"
+                            stroke-linecap="round" />
+                    </svg>
+                </div>
+                <span class="title-bar-name">Teleye</span>
+            </div>
+            <div class="window-controls">
+                <button id="min-btn" class="control-btn min-btn" title="Minimize">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19" stroke="currentColor" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <button id="close-btn" class="control-btn close-btn" title="Close">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-linecap="round" />
+                    </svg>
+                </button>
             </div>
         </div>
 
+        <!-- Main Content -->
         <div class="content">
+
+            <!-- Script Editor -->
             <div class="script-section">
-                <label for="script-input" class="label">Script</label>
-                <textarea id="script-input" class="script-textarea" placeholder="Paste your script here...">Welcome to your new Teleprompter.
+                <label for="script-input" class="field-label">Script</label>
+                <textarea id="script-input" class="script-textarea" placeholder="Paste your script here...">Welcome to Teleye.
 
 The glassmorphic design helps you stay focused.
 
 Shortcuts:
-Play/Pause: Ctrl + Shift + Space
+Play/Pause: Ctrl + Space
 Toggle Interaction: Ctrl + Shift + L
 Exit: Ctrl + Alt + X
 
 Ready to start?</textarea>
             </div>
 
+            <!-- Sidebar -->
             <div class="settings-sidebar">
+
+                <!-- Speed Control -->
                 <div class="settings-card">
-                    <label class="label">Scroll Speed</label>
-                    <div class="slider-container">
-                        <input type="range" id="speed-input" min="0.5" max="5.0" step="0.1" value="1.0" class="slider">
-                        <span id="speed-display" class="speed-value">1.0x</span>
+                    <div class="speed-header">
+                        <label class="field-label" for="speed-input">Speed</label>
+                        <span id="speed-display" class="speed-value">1.0×</span>
                     </div>
+                    <input type="range" id="speed-input" min="0.5" max="5.0" step="0.1" value="1.0" class="slider">
                 </div>
 
+                <!-- Shortcuts -->
                 <div class="settings-card">
-                    <label class="label" style="margin-bottom: 12px; display: block;">Shortcuts</label>
+                    <label class="field-label" style="margin-bottom: 11px; display: block;">Shortcuts</label>
                     <div class="shortcuts-list">
                         <div class="shortcut-item">
                             <span>Play / Pause</span>
-                            <div class="keys">
-                                <kbd>⌃</kbd><kbd>Space</kbd>
-                            </div>
+                            <div class="keys"><kbd>⌃</kbd><kbd>Space</kbd></div>
                         </div>
                         <div class="shortcut-item">
                             <span>Interactive</span>
-                            <div class="keys">
-                                <kbd>⌃</kbd><kbd>⇧</kbd><kbd>L</kbd>
-                            </div>
+                            <div class="keys"><kbd>⌃</kbd><kbd>⇧</kbd><kbd>L</kbd></div>
                         </div>
                         <div class="shortcut-item">
                             <span>Exit</span>
-                            <div class="keys">
-                                <kbd>⌃</kbd><kbd>Alt</kbd><kbd>X</kbd>
-                            </div>
+                            <div class="keys"><kbd>⌃</kbd><kbd>Alt</kbd><kbd>X</kbd></div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Start Button -->
                 <button id="start-btn" class="start-button">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 5v14l11-7L8 5z" />
+                    </svg>
                     Start Prompter
                 </button>
+
             </div>
         </div>
     </div>

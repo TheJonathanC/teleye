@@ -1,15 +1,21 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html,
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     background: transparent;
     overflow: hidden;
     width: 100vw;
     height: 100vh;
+    -webkit-font-smoothing: antialiased;
 }
 
 #app {
@@ -18,205 +24,284 @@ body {
     height: 100%;
 }
 
-/* Scroll container */
+/* ─── Teleprompter Band ──────────────────────────────────────── */
 .scroll-container {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* Changed from auto for transform scrolling */
     position: relative;
 
-    /* Dark Liquid Glass */
-    background: linear-gradient(135deg,
-            rgba(20, 20, 25, 0.7) 0%,
-            rgba(20, 20, 25, 0.4) 100%);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: linear-gradient(180deg,
+            rgba(8, 8, 12, 0.94) 0%,
+            rgba(8, 8, 12, 0.90) 100%);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
 
-    padding: 2rem 3rem;
+    padding: 28px 44px;
 
-    /* Rounded corners & Bevel */
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-top: none;
-    /* Connects to invisible window top */
 
     box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+        0 16px 56px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .scroll-container::-webkit-scrollbar {
     display: none;
 }
 
-/* Scrolling content wrapper */
+/* ─── Scrolling Content ──────────────────────────────────────── */
 .scrolling-content {
     width: 100%;
-    /* No min-height, let it grow with content */
     will-change: transform;
-    /* Optimize for compositing */
 }
 
 .text-content {
     width: 100%;
-    color: white;
+    color: rgba(255, 255, 255, 0.92);
     font-size: 3rem;
-    line-height: 1.6;
-    font-weight: 500;
+    line-height: 1.5;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     white-space: pre-wrap;
     word-wrap: break-word;
-    /* Ensure content has some padding at the bottom for scrolling off-screen ease */
     padding-bottom: 50vh;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
+/* ─── Text Editor (interactive mode) ────────────────────────── */
 .text-editor {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    padding: 2rem 3rem;
-    /* Match container padding */
-    background: rgba(20, 20, 25, 0.9);
-    /* Slightly darker background when editing */
+    padding: 28px 44px;
+    background: rgba(8, 8, 12, 0.97);
     border: none;
     outline: none;
     resize: none;
-    font-family: inherit;
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    font-size: 1.35rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
     overflow-y: auto;
-    /* Allow scrolling within editor */
     z-index: 10;
 }
 
 .text-editor::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.18);
 }
 
-/* Controls panel */
+.text-editor::-webkit-scrollbar {
+    width: 5px;
+}
+
+.text-editor::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.text-editor::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+}
+
+/* ─── Controls Panel ─────────────────────────────────────────── */
 .controls {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(17, 24, 39, 0.95);
-    backdrop-filter: blur(8px);
-    padding: 1.5rem;
-    border-top: 1px solid rgba(75, 85, 99, 0.5);
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 340px;
+    max-width: calc(100% - 32px);
+    background: rgba(12, 12, 18, 0.88);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    z-index: 100;
 }
 
 .controls-inner {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .control-row {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
+/* ─── Play/Pause Button ──────────────────────────────────────── */
 .btn-primary {
-    padding: 0.75rem 1.5rem;
-    background: #2563eb;
-    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: #f59e0b;
+    color: #0c0c10;
     border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 7px;
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.01em;
+}
+
+.btn-primary svg {
+    fill: #0c0c10;
 }
 
 .btn-primary:hover {
-    background: #1d4ed8;
+    background: #fbbf24;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
 }
 
+.btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* ─── Speed Control ──────────────────────────────────────────── */
 .speed-control {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 10px;
 }
 
 .speed-control label {
-    color: white;
+    color: rgba(255, 255, 255, 0.4);
     font-weight: 500;
+    font-size: 11.5px;
     white-space: nowrap;
-    min-width: 100px;
+}
+
+#speed-value {
+    color: #fbbf24;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
 }
 
 #speed-slider {
     flex: 1;
-    height: 8px;
-    background: #374151;
-    border-radius: 4px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
     outline: none;
     cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 #speed-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #2563eb;
+    width: 15px;
+    height: 15px;
+    background: #fbbf24;
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 1px 6px rgba(251, 191, 36, 0.4);
+    transition: transform 0.1s;
 }
 
-#speed-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #2563eb;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
+#speed-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
 }
 
+#speed-slider::-webkit-slider-thumb:active {
+    transform: scale(0.9);
+}
+
+/* ─── Shortcuts Info ─────────────────────────────────────────── */
 .shortcuts-info {
     display: flex;
-    gap: 2rem;
-    color: #9ca3af;
-    font-size: 0.875rem;
+    justify-content: center;
+    gap: 16px;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 10.5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
 }
 
 .shortcuts-info p {
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 kbd {
-    padding: 0.25rem 0.5rem;
-    background: #1f2937;
-    border-radius: 0.25rem;
-    font-family: monospace;
-    font-size: 0.875rem;
+    padding: 1px 4px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
 }
 
-/* Mode indicator */
+/* ─── Mode Indicator ─────────────────────────────────────────── */
 .mode-indicator {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10.5px;
     font-weight: 600;
-    background: rgba(31, 41, 55, 0.9);
-    color: #d1d5db;
-    transition: all 0.3s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.35);
+    transition: all 0.25s ease;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mode-indicator::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+    transition: background 0.25s, box-shadow 0.25s;
 }
 
 .mode-indicator.interactive {
-    background: rgba(22, 163, 74, 0.9);
-    color: white;
+    background: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.2);
 }
 
-/* Utility classes */
+.mode-indicator.interactive::before {
+    background: #fbbf24;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+}
+
+/* ─── Utility ────────────────────────────────────────────────── */
 .hidden {
     display: none !important;
 }

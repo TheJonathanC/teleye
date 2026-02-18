@@ -13,6 +13,9 @@ const textEditor = document.getElementById('text-editor');
 const textContent = document.getElementById('text-content');
 const controls = document.getElementById('controls');
 const playPauseBtn = document.getElementById('play-pause-btn');
+const playIcon = document.getElementById('play-icon');
+const pauseIcon = document.getElementById('pause-icon');
+const playPauseLabel = document.getElementById('play-pause-label');
 const speedSlider = document.getElementById('speed-slider');
 const speedValue = document.getElementById('speed-value');
 const modeIndicator = document.getElementById('mode-indicator');
@@ -51,13 +54,20 @@ function updateTextDisplay() {
     textContent.textContent = textEditor.value;
 }
 
+function setPlayingState(playing) {
+    isPlaying = playing;
+    if (playIcon) playIcon.style.display = playing ? 'none' : 'block';
+    if (pauseIcon) pauseIcon.style.display = playing ? 'block' : 'none';
+    if (playPauseLabel) playPauseLabel.textContent = playing ? 'Pause' : 'Play';
+}
+
 function setInteractionMode(mode) {
     interactionMode = mode;
     if (mode) {
         // Interactive Mode
         controls.classList.remove('hidden');
-        textEditor.classList.remove('hidden'); // Shows editor over content
-        modeIndicator.textContent = '🖱 Interactive';
+        textEditor.classList.remove('hidden');
+        modeIndicator.textContent = 'Interactive';
         modeIndicator.classList.add('interactive');
 
         // Pause scrolling when entering interactive mode
@@ -65,21 +75,20 @@ function setInteractionMode(mode) {
     } else {
         // Click-Through Mode
         controls.classList.add('hidden');
-        textEditor.classList.add('hidden'); // Hides editor, revealing content
-        modeIndicator.textContent = '👻 Click-Through';
+        textEditor.classList.add('hidden');
+        modeIndicator.textContent = 'Click-Through';
         modeIndicator.classList.remove('interactive');
     }
 }
 
 function togglePlayPause() {
-    isPlaying = !isPlaying;
-    playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
-
     if (isPlaying) {
+        setPlayingState(false);
+        stopScrolling();
+    } else {
+        setPlayingState(true);
         lastTimestamp = performance.now();
         startScrolling();
-    } else {
-        stopScrolling();
     }
 }
 
@@ -95,27 +104,18 @@ function startScrolling() {
         const deltaTime = timestamp - lastTimestamp;
 
         if (deltaTime > 0 && deltaTime < 100) {
-            // Pixels per second calculation
             const pixelsPerSecond = 50 * speed;
             const scrollAmount = (pixelsPerSecond * deltaTime) / 1000;
 
             currentScrollY += scrollAmount;
 
-            // Apply transform
             scrollingContent.style.transform = `translateY(-${currentScrollY}px)`;
 
-            // Check if we reached the end
-            // We compare currentScrollY + viewportHeight against total content height
             const viewportHeight = scrollContainer.clientHeight;
             const contentHeight = scrollingContent.scrollHeight;
 
             if (currentScrollY + viewportHeight >= contentHeight) {
-                // Stop at end
-                isPlaying = false;
-                playPauseBtn.textContent = '▶ Play';
-                // Optional: loop or stay at bottom? 
-                // Creating a loop effect might be nice, but simple stop for now.
-                // To loop: currentScrollY = -viewportHeight; 
+                setPlayingState(false);
                 return;
             }
         }
