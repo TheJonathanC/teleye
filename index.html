@@ -12,8 +12,10 @@
   <div id="app">
     <!-- Scrolling text container -->
     <div id="scroll-container" class="scroll-container">
-      <div id="text-display" class="text-display">
-        <textarea id="text-editor" class="text-editor hidden" placeholder="Enter your script here...">Welcome to your Teleprompter!
+      <div id="scrolling-content" class="scrolling-content">
+        <div id="text-content" class="text-content"></div>
+      </div>
+      <textarea id="text-editor" class="text-editor hidden" placeholder="Enter your script here...">Welcome to your Teleprompter!
 
 This is sample text to get you started. Replace this with your script.
 
@@ -26,8 +28,6 @@ Press Ctrl+Shift+L to toggle Interaction Mode:
 - When ON: You can interact with this window to edit text and adjust settings
 
 Try it out and enjoy your presentations!</textarea>
-        <div id="text-content" class="text-content"></div>
-      </div>
     </div>
 
     <!-- Controls panel (visible only in interaction mode) -->

@@ -3,10 +3,12 @@ let isPlaying = false;
 let speed = 1.0;
 let interactionMode = false;
 let animationFrameId = null;
-let lastTimestamp = 0; // Using performance.now() consistent timing
+let lastTimestamp = 0;
+let currentScrollY = 0;
 
 // DOM elements
 const scrollContainer = document.getElementById('scroll-container');
+const scrollingContent = document.getElementById('scrolling-content');
 const textEditor = document.getElementById('text-editor');
 const textContent = document.getElementById('text-content');
 const controls = document.getElementById('controls');
@@ -19,11 +21,9 @@ function init() {
     // Listen for initial data from dashboard
     if (window.electronAPI) {
         window.electronAPI.onInitTeleprompter((data) => {
-            // CRITICAL: Ensure we get data and update DOM immediately
             if (data && data.script) {
                 textEditor.value = data.script;
-                // Force update display
-                textContent.textContent = data.script;
+                updateTextDisplay();
             }
             if (data && data.speed) {
                 speed = data.speed;
@@ -54,15 +54,18 @@ function updateTextDisplay() {
 function setInteractionMode(mode) {
     interactionMode = mode;
     if (mode) {
+        // Interactive Mode
         controls.classList.remove('hidden');
-        textEditor.classList.remove('hidden');
-        textContent.classList.add('hidden');
+        textEditor.classList.remove('hidden'); // Shows editor over content
         modeIndicator.textContent = '🖱 Interactive';
         modeIndicator.classList.add('interactive');
+
+        // Pause scrolling when entering interactive mode
+        if (isPlaying) togglePlayPause();
     } else {
+        // Click-Through Mode
         controls.classList.add('hidden');
-        textEditor.classList.add('hidden');
-        textContent.classList.remove('hidden');
+        textEditor.classList.add('hidden'); // Hides editor, revealing content
         modeIndicator.textContent = '👻 Click-Through';
         modeIndicator.classList.remove('interactive');
     }
@@ -73,7 +76,6 @@ function togglePlayPause() {
     playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
 
     if (isPlaying) {
-        // Reset timestamp reference when starting to prevent jump
         lastTimestamp = performance.now();
         startScrolling();
     } else {
@@ -90,28 +92,30 @@ function startScrolling() {
     function scroll(timestamp) {
         if (!isPlaying) return;
 
-        // Calculate delta time
-        // Use the passed timestamp from RAF for consistency
         const deltaTime = timestamp - lastTimestamp;
 
-        // Only scroll if some time has passed (not 0) and not a huge jump (e.g. background tab resume)
-        // 100ms cap to prevent jump after lag
         if (deltaTime > 0 && deltaTime < 100) {
-            // Speed logic: 50 base pixels per second * speed multiplier
+            // Pixels per second calculation
             const pixelsPerSecond = 50 * speed;
             const scrollAmount = (pixelsPerSecond * deltaTime) / 1000;
 
-            scrollContainer.scrollTop += scrollAmount;
+            currentScrollY += scrollAmount;
 
-            // Check if bottom reached using a small threshold (1px)
-            // scrollTop allows fractional values in most modern browsers, 
-            // but reading it back might round in some cases. clientHeight + scrollTop ~= scrollHeight
-            if (Math.ceil(scrollContainer.scrollTop + scrollContainer.clientHeight) >= scrollContainer.scrollHeight) {
-                // Determine loop or stop behavior. For now, stop.
+            // Apply transform
+            scrollingContent.style.transform = `translateY(-${currentScrollY}px)`;
+
+            // Check if we reached the end
+            // We compare currentScrollY + viewportHeight against total content height
+            const viewportHeight = scrollContainer.clientHeight;
+            const contentHeight = scrollingContent.scrollHeight;
+
+            if (currentScrollY + viewportHeight >= contentHeight) {
+                // Stop at end
                 isPlaying = false;
                 playPauseBtn.textContent = '▶ Play';
-                // Reset to top
-                scrollContainer.scrollTop = 0;
+                // Optional: loop or stay at bottom? 
+                // Creating a loop effect might be nice, but simple stop for now.
+                // To loop: currentScrollY = -viewportHeight; 
                 return;
             }
         }
@@ -120,7 +124,6 @@ function startScrolling() {
         animationFrameId = requestAnimationFrame(scroll);
     }
 
-    // Start loop
     animationFrameId = requestAnimationFrame(scroll);
 }
 
